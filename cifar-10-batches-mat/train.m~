@@ -1,0 +1,32 @@
+function [C,no_clusters,md2] = train(images,lables)
+    %% Find SIFT features of all the images in the dataset
+    sz = 0;
+    for idx = 1:size(images,1)
+        I = single(rgb2gray(reshape(images(idx,:),32,32,3)));
+        [~,d] = vl_sift(I');
+
+        desc(sz+1:sz+size(d',1),:) = d';
+        sz = sz+size(d',1);
+    end
+
+    %% Use Kmeans to cluster them cNumber of clusters and normalized feature vector for each image
+    cNumber = 10;
+    [group_no,C] = kmeans(double(desc),cNumber);
+    % md1 = fitcknn(double(desc),group_no,'NumNeighbors',3,'Standardize',1);
+    bin = zeros(size(images,1),cNumber);
+    for idx = 1:size(images,1)
+        I = single(rgb2gray(reshape(images(idx,:),32,32,3)));
+        [~,d] = vl_sift(I');
+        x = knnsearch(C,double(d'));
+        % x = predict(md1,double(d'));
+        uv = unique(x);
+        n  = histc(x,uv);
+        bin(idx,uv) = n;
+        if sum(bin(idx,:)) ~= 0 
+            bin(idx,:) = bin(idx,:)/sum(bin(idx,:));
+        end
+    end
+
+    %% Train using svm 
+    md2 = fitcsvm(bin,lables,'Standardize',true,'KernelFunction','RBF','KernelScale','auto');
+end

@@ -1,0 +1,25 @@
+% function acc = test(filename,md1,md2)
+t_batch = load('test_batch.mat');
+% classes = [0,3];
+% cNumber = 2000;
+
+images = t_batch.data(logical(sum(t_batch.labels == classes,2)),:);
+lables = t_batch.labels(logical(sum(t_batch.labels == classes,2)));
+
+bin = zeros(size(images,1),cNumber);
+for idx = 1:size(images,1)
+    I = single(rgb2gray(reshape(images(idx,:),32,32,3)));
+    [~,d] = vl_sift(I');
+    
+    x = knnsearch(C,double(d'));
+    % x = predict(md1,double(d'));
+    uv = unique(x);
+    n  = histc(x,uv);
+    bin(idx,uv) = n;
+    if sum(bin(idx,:)) ~= 0 
+        bin(idx,:) = bin(idx,:)/sum(bin(idx,:));
+    end
+end
+
+out = predict(md2,bin);
+acc = sum(out == lables)/size(lables,1);
