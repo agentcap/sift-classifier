@@ -1,8 +1,7 @@
-% function out = findCls(images,C,md)
-% clearvars -except C md1 md2 md3 md4 md5 md6 md7 md8 md9 md10
-% [C,md1,md2,md3,md4,md5] = train()
-
 %% Find the normalized features vector of the images
+
+% [C,md1,md2,md3,md4,md5] = train()
+% clearvars -except C md1 md2 md3 md4 md5
 no_clusters = 500;
 idx = 1;
 dirFiles = dir('images/');
@@ -33,23 +32,16 @@ for j = 1:size(dirFiles,1)
 end
 
 %% Predict based on the trained data
-[out(:,1),cost(:,1:2)] = predict(md1,bin);
-[out(:,2),cost(:,3:4)] = predict(md2,bin);
-[out(:,3),cost(:,5:6)] = predict(md3,bin);
-[out(:,4),cost(:,7:8)] = predict(md4,bin);
-[out(:,5),cost(:,9:10)] = predict(md5,bin);
-[out(:,6),cost(:,11:12)] = predict(md6,bin);
-[out(:,7),cost(:,13:14)] = predict(md7,bin);
-[out(:,8),cost(:,15:16)] = predict(md8,bin);
-[out(:,8),cost(:,17:18)] = predict(md9,bin);
-[out(:,10),cost(:,19:20)] = predict(md10,bin);
+[out(:,1),cst] = predict(md1,bin);
+cost(:,1) = cst(:,2);
+[out(:,2),cst] = predict(md2,bin);
+cost(:,2) = cst(:,2);
+[out(:,3),cst] = predict(md3,bin);
+cost(:,3) = cst(:,2);
+[out(:,4),cst] = predict(md4,bin);
+cost(:,4) = cst(:,2);
+[out(:,5),cst] = predict(md5,bin);
+cost(:,5) = cst(:,2);
 
-cst(:,1) = sum(cost(:,[1,3,5,7]),2);
-cst(:,2) = sum(cost(:,[2,9,11,13]),2);
-cst(:,3) = sum(cost(:,[4,10,15,17]),2);
-cst(:,4) = sum(cost(:,[6,12,16,19]),2);
-cst(:,5) = sum(cost(:,[8,14,18,20]),2);
-
-[a,out] = max(cst');
-sum(labels==out)/size(out',1)
-% end
+[~,out] = max(cost');
+acc = sum(labels==out)/size(out',1)

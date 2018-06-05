@@ -1,4 +1,4 @@
-% function [C,md1,md2,md3,md4,md5] = train()
+function [C,md1,md2,md3,md4,md5] = train()
     %% Find SIFT features of all the images in the dataset
     dirFiles = dir('images/');
     idx = 1;sz = 0;img_cnt = 0;
@@ -25,6 +25,7 @@
     no_clusters = 500;
     [group_no,C] = kmeans(double(desc),no_clusters);
     
+    
     %% Find normalized feature vector for each image
     % md1 = fitcknn(double(desc),group_no,'NumNeighbors',3,'Standardize',1);
     bin = zeros(img_cnt,no_clusters);
@@ -50,16 +51,11 @@
             end
         end
     end
-    
+
     %% Train using svm 
-    md1 = fitcsvm([bin(labels == 1,:);bin(labels == 2,:)],[labels(labels == 1);labels(labels == 2)],'Standardize',true,'KernelFunction','RBF','KernelScale','auto')
-    md2 = fitcsvm([bin(labels == 1,:);bin(labels == 3,:)],[labels(labels == 1);labels(labels == 3)],'Standardize',true,'KernelFunction','RBF','KernelScale','auto')
-    md3 = fitcsvm([bin(labels == 1,:);bin(labels == 4,:)],[labels(labels == 1);labels(labels == 4)],'Standardize',true,'KernelFunction','RBF','KernelScale','auto')
-    md4 = fitcsvm([bin(labels == 1,:);bin(labels == 5,:)],[labels(labels == 1);labels(labels == 5)],'Standardize',true,'KernelFunction','RBF','KernelScale','auto')
-    md5 = fitcsvm([bin(labels == 2,:);bin(labels == 3,:)],[labels(labels == 2);labels(labels == 3)],'Standardize',true,'KernelFunction','RBF','KernelScale','auto')
-    md6 = fitcsvm([bin(labels == 2,:);bin(labels == 4,:)],[labels(labels == 2);labels(labels == 4)],'Standardize',true,'KernelFunction','RBF','KernelScale','auto')
-    md7 = fitcsvm([bin(labels == 2,:);bin(labels == 5,:)],[labels(labels == 2);labels(labels == 5)],'Standardize',true,'KernelFunction','RBF','KernelScale','auto')
-    md8 = fitcsvm([bin(labels == 3,:);bin(labels == 4,:)],[labels(labels == 3);labels(labels == 4)],'Standardize',true,'KernelFunction','RBF','KernelScale','auto')
-    md9 = fitcsvm([bin(labels == 3,:);bin(labels == 5,:)],[labels(labels == 3);labels(labels == 5)],'Standardize',true,'KernelFunction','RBF','KernelScale','auto')
-    md10 = fitcsvm([bin(labels == 4,:);bin(labels == 5,:)],[labels(labels == 4);labels(labels == 5)],'Standardize',true,'KernelFunction','RBF','KernelScale','auto')
-% end
+    md1 = fitcsvm(bin,labels==1,'Standardize',true,'KernelFunction','RBF','KernelScale','auto')
+    md2 = fitcsvm(bin,labels==2,'Standardize',true,'KernelFunction','RBF','KernelScale','auto')
+    md3 = fitcsvm(bin,labels==3,'Standardize',true,'KernelFunction','RBF','KernelScale','auto')
+    md4 = fitcsvm(bin,labels==4,'Standardize',true,'KernelFunction','RBF','KernelScale','auto')
+    md5 = fitcsvm(bin,labels==5,'Standardize',true,'KernelFunction','RBF','KernelScale','auto')
+end
